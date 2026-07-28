@@ -37,10 +37,10 @@ export default async function DashboardPage() {
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 px-4 py-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-zinc-900">Dashboard</h1>
+        <h1 className="font-serif text-xl font-bold text-black">Dashboard</h1>
         <Link
           href="/clients"
-          className="rounded-md bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white"
+          className="rounded-md bg-black px-3 py-1.5 text-sm font-medium text-white"
         >
           + New client / job
         </Link>
@@ -61,26 +61,48 @@ export default async function DashboardPage() {
                 </span>
               </div>
               <div className="flex flex-col gap-2 px-2 pb-2">
-                {columnJobs.map((job) => (
-                  <Link
-                    key={job.id}
-                    href={`/jobs/${job.id}`}
-                    className="flex flex-col gap-2 rounded-md border border-zinc-200 bg-white p-3 text-sm shadow-sm hover:border-zinc-300"
-                  >
-                    <span className="font-medium text-zinc-900">
-                      {job.title}
-                    </span>
-                    <span className="text-xs text-zinc-600">
-                      {job.clients?.name ?? "Unknown client"}
-                    </span>
-                    {job.estimated_value !== null && (
-                      <span className="text-xs text-zinc-600">
-                        {formatCurrency(job.estimated_value)}
+                {columnJobs.map((job) => {
+                  const isHighValue =
+                    job.estimated_value !== null && job.estimated_value >= 15000;
+                  return (
+                    <div
+                      key={job.id}
+                      className="relative flex flex-col gap-2 rounded-md border border-zinc-200 bg-white p-3 text-sm shadow-sm hover:border-zinc-400"
+                    >
+                      <Link
+                        href={`/jobs/${job.id}`}
+                        className="absolute inset-0"
+                        aria-label={`View ${job.title}`}
+                      />
+                      <span className="flex items-center gap-1.5 font-serif font-semibold text-black">
+                        {isHighValue && (
+                          <span
+                            className="h-1.5 w-1.5 shrink-0 rounded-full bg-red-600"
+                            title="High-value job"
+                          />
+                        )}
+                        {job.title}
                       </span>
-                    )}
-                    <StatusSelect jobId={job.id} status={job.status} />
-                  </Link>
-                ))}
+                      <span className="text-xs text-zinc-600">
+                        {job.clients?.name ?? "Unknown client"}
+                      </span>
+                      {job.estimated_value !== null && (
+                        <span
+                          className={
+                            isHighValue
+                              ? "text-xs font-semibold text-red-600"
+                              : "text-xs text-zinc-600"
+                          }
+                        >
+                          {formatCurrency(job.estimated_value)}
+                        </span>
+                      )}
+                      <div className="relative z-10">
+                        <StatusSelect jobId={job.id} status={job.status} />
+                      </div>
+                    </div>
+                  );
+                })}
                 {columnJobs.length === 0 && (
                   <p className="px-1 py-2 text-xs text-zinc-500">No jobs</p>
                 )}

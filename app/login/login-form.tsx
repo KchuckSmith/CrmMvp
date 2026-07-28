@@ -23,7 +23,7 @@ export function LoginForm() {
           onClick={() => setMode("login")}
           className={`flex-1 rounded-md px-3 py-2 font-medium ${
             mode === "login"
-              ? "bg-zinc-900 text-white"
+              ? "bg-black text-white"
               : "bg-zinc-100 text-zinc-700"
           }`}
         >
@@ -34,7 +34,7 @@ export function LoginForm() {
           onClick={() => setMode("signup")}
           className={`flex-1 rounded-md px-3 py-2 font-medium ${
             mode === "signup"
-              ? "bg-zinc-900 text-white"
+              ? "bg-black text-white"
               : "bg-zinc-100 text-zinc-700"
           }`}
         >
@@ -82,7 +82,7 @@ export function LoginForm() {
         <button
           type="submit"
           disabled={pending}
-          className="rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
+          className="rounded-md bg-black px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
         >
           {pending
             ? "Please wait…"

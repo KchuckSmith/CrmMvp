@@ -16,7 +16,7 @@ export default async function ClientsPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-6">
-      <h1 className="text-lg font-semibold text-zinc-900">Clients</h1>
+      <h1 className="font-serif text-xl font-bold text-black">Clients</h1>
 
       <details className="rounded-lg border border-zinc-200 bg-white p-4">
         <summary className="cursor-pointer text-sm font-medium text-zinc-700">

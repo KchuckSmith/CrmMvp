@@ -35,7 +35,7 @@ export function ActivityForm({
         />
         <SubmitButton
           pendingText="Adding…"
-          className="rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white"
+          className="rounded-md bg-black px-3 py-2 text-sm font-medium text-white"
         >
           Add
         </SubmitButton>

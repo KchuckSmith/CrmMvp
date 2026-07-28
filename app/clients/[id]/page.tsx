@@ -52,7 +52,7 @@ export default async function ClientDetailPage({
           <Link href="/clients" className="text-xs text-zinc-500 hover:underline">
             ← Clients
           </Link>
-          <h1 className="text-lg font-semibold text-zinc-900">{client.name}</h1>
+          <h1 className="font-serif text-xl font-bold text-black">{client.name}</h1>
         </div>
         <form action={removeClient.bind(null, client.id)}>
           <SubmitButton
@@ -65,7 +65,7 @@ export default async function ClientDetailPage({
       </div>
 
       <section className="rounded-lg border border-zinc-200 bg-white p-4">
-        <h2 className="mb-3 text-sm font-semibold text-zinc-700">
+        <h2 className="mb-3 font-serif text-base font-semibold text-black">
           Contact info
         </h2>
         <ClientForm
@@ -77,7 +77,7 @@ export default async function ClientDetailPage({
 
       <section className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-zinc-700">Jobs</h2>
+          <h2 className="font-serif text-base font-semibold text-black">Jobs</h2>
         </div>
         <div className="flex flex-col divide-y divide-zinc-200 rounded-lg border border-zinc-200 bg-white">
           {jobs?.length === 0 && (
@@ -107,7 +107,7 @@ export default async function ClientDetailPage({
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-semibold text-zinc-700">Activity</h2>
+        <h2 className="font-serif text-base font-semibold text-black">Activity</h2>
         <ActivityForm target={{ clientId: client.id }} />
         <ActivityTimeline
           items={activity ?? []}

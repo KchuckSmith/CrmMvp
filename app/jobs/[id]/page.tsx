@@ -55,7 +55,7 @@ export default async function JobDetailPage({
               ← {client.name}
             </Link>
           )}
-          <h1 className="text-lg font-semibold text-zinc-900">{job.title}</h1>
+          <h1 className="font-serif text-xl font-bold text-black">{job.title}</h1>
         </div>
         <form action={removeJob.bind(null, job.id, job.client_id)}>
           <SubmitButton
@@ -68,7 +68,7 @@ export default async function JobDetailPage({
       </div>
 
       <section className="rounded-lg border border-zinc-200 bg-white p-4">
-        <h2 className="mb-3 text-sm font-semibold text-zinc-700">Details</h2>
+        <h2 className="mb-3 font-serif text-base font-semibold text-black">Details</h2>
         <JobForm
           action={editJob.bind(null, job.id, job.client_id)}
           submitLabel="Save changes"
@@ -77,7 +77,7 @@ export default async function JobDetailPage({
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-semibold text-zinc-700">Bid history</h2>
+        <h2 className="font-serif text-base font-semibold text-black">Bid history</h2>
         <BidList bids={bids ?? []} jobId={job.id} />
         <details className="rounded-lg border border-zinc-200 bg-white p-4">
           <summary className="cursor-pointer text-sm font-medium text-zinc-700">
@@ -90,7 +90,7 @@ export default async function JobDetailPage({
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-semibold text-zinc-700">Activity</h2>
+        <h2 className="font-serif text-base font-semibold text-black">Activity</h2>
         <ActivityForm target={{ jobId: job.id }} />
         <ActivityTimeline items={activity ?? []} target={{ jobId: job.id }} />
       </section>
