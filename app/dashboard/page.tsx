@@ -3,12 +3,23 @@ import { createClient } from "@/lib/supabase/server";
 import { JOB_STATUS_OPTIONS } from "@/lib/job-status";
 import type { JobStatus } from "@/lib/supabase/types";
 import { StatusSelect } from "./status-select";
+import { TaskCheckbox } from "@/app/task-checkbox";
 
 type DashboardJob = {
   id: string;
   title: string;
   status: JobStatus;
   estimated_value: number | null;
+  clients: { name: string } | null;
+};
+
+type DueTask = {
+  id: string;
+  title: string;
+  due_date: string | null;
+  job_id: string | null;
+  client_id: string | null;
+  jobs: { title: string } | null;
   clients: { name: string } | null;
 };
 
@@ -23,16 +34,31 @@ function formatCurrency(value: number | null) {
 
 export default async function DashboardPage() {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("jobs")
-    .select("id, title, status, estimated_value, clients(name)")
-    .order("created_at", { ascending: false });
+  const today = new Date().toISOString().slice(0, 10);
+
+  const [{ data, error }, { data: dueTasksData, error: dueTasksError }] =
+    await Promise.all([
+      supabase
+        .from("jobs")
+        .select("id, title, status, estimated_value, clients(name)")
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("tasks")
+        .select("id, title, due_date, job_id, client_id, jobs(title), clients(name)")
+        .is("completed_at", null)
+        .lte("due_date", today)
+        .order("due_date", { ascending: true }),
+    ]);
 
   if (error) {
     throw new Error(error.message);
   }
+  if (dueTasksError) {
+    throw new Error(dueTasksError.message);
+  }
 
   const jobs = (data ?? []) as unknown as DashboardJob[];
+  const dueTasks = (dueTasksData ?? []) as unknown as DueTask[];
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 px-4 py-6">
@@ -45,6 +71,63 @@ export default async function DashboardPage() {
           + New client / job
         </Link>
       </div>
+
+      {dueTasks.length > 0 && (
+        <div className="rounded-lg border border-zinc-200 bg-white p-4">
+          <h2 className="mb-3 font-serif text-base font-semibold text-black">
+            Due Today / Overdue
+          </h2>
+          <ul className="flex flex-col divide-y divide-zinc-200">
+            {dueTasks.map((task) => {
+              const isOverdue = task.due_date !== null && task.due_date < today;
+              const target = {
+                jobId: task.job_id ?? undefined,
+                clientId: task.client_id ?? undefined,
+              };
+              const linkHref = task.job_id
+                ? `/jobs/${task.job_id}`
+                : task.client_id
+                  ? `/clients/${task.client_id}`
+                  : null;
+              const linkLabel = task.jobs?.title ?? task.clients?.name ?? null;
+
+              return (
+                <li
+                  key={task.id}
+                  className="flex items-center justify-between gap-3 py-3 text-sm first:pt-0 last:pb-0"
+                >
+                  <div className="flex items-center gap-3">
+                    <TaskCheckbox taskId={task.id} target={target} />
+                    <div className="flex flex-col">
+                      <span
+                        className={
+                          isOverdue
+                            ? "font-medium text-red-600"
+                            : "font-medium text-zinc-900"
+                        }
+                      >
+                        {task.title}
+                      </span>
+                      <span className="text-xs text-zinc-500">
+                        {isOverdue ? "Overdue" : "Due today"}
+                        {task.due_date ? ` · ${task.due_date}` : ""}
+                        {linkHref && linkLabel && (
+                          <>
+                            {" · "}
+                            <Link href={linkHref} className="hover:underline">
+                              {linkLabel}
+                            </Link>
+                          </>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
 
       <div className="flex flex-1 gap-4 overflow-x-auto pb-4">
         {JOB_STATUS_OPTIONS.map((column) => {

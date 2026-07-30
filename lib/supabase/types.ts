@@ -109,6 +109,40 @@ export interface Database {
           },
         ];
       };
+      contacts: {
+        Row: {
+          id: string;
+          user_id: string;
+          client_id: string;
+          name: string;
+          role: string | null;
+          phone: string | null;
+          email: string | null;
+          is_primary: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          client_id: string;
+          name: string;
+          role?: string | null;
+          phone?: string | null;
+          email?: string | null;
+          is_primary?: boolean;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["contacts"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "contacts_client_id_fkey";
+            columns: ["client_id"];
+            isOneToOne: false;
+            referencedRelation: "clients";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       activity_log: {
         Row: {
           id: string;
@@ -141,6 +175,84 @@ export interface Database {
           },
           {
             foreignKeyName: "activity_log_client_id_fkey";
+            columns: ["client_id"];
+            isOneToOne: false;
+            referencedRelation: "clients";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      tasks: {
+        Row: {
+          id: string;
+          user_id: string;
+          job_id: string | null;
+          client_id: string | null;
+          title: string;
+          due_date: string | null;
+          completed_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          job_id?: string | null;
+          client_id?: string | null;
+          title: string;
+          due_date?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["tasks"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "tasks_job_id_fkey";
+            columns: ["job_id"];
+            isOneToOne: false;
+            referencedRelation: "jobs";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "tasks_client_id_fkey";
+            columns: ["client_id"];
+            isOneToOne: false;
+            referencedRelation: "clients";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      documents: {
+        Row: {
+          id: string;
+          user_id: string;
+          job_id: string | null;
+          client_id: string | null;
+          file_name: string;
+          file_path: string;
+          file_size: number | null;
+          uploaded_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          job_id?: string | null;
+          client_id?: string | null;
+          file_name: string;
+          file_path: string;
+          file_size?: number | null;
+          uploaded_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["documents"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "documents_job_id_fkey";
+            columns: ["job_id"];
+            isOneToOne: false;
+            referencedRelation: "jobs";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "documents_client_id_fkey";
             columns: ["client_id"];
             isOneToOne: false;
             referencedRelation: "clients";

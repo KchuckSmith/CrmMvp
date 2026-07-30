@@ -6,6 +6,10 @@ import { addBid } from "@/lib/actions/bids";
 import { JobForm } from "../job-form";
 import { BidForm } from "../bid-form";
 import { BidList } from "../bid-list";
+import { TaskForm } from "@/app/task-form";
+import { TaskList } from "@/app/task-list";
+import { DocumentForm } from "@/app/document-form";
+import { DocumentList, type DocumentItem } from "@/app/document-list";
 import { ActivityForm } from "@/app/activity-form";
 import { ActivityTimeline } from "@/app/activity-timeline";
 import { SubmitButton } from "@/app/submit-button";
@@ -28,18 +32,39 @@ export default async function JobDetailPage({
     notFound();
   }
 
-  const [{ data: bids }, { data: activity }] = await Promise.all([
-    supabase
-      .from("bids")
-      .select("id, amount, status, sent_date, expires_date")
-      .eq("job_id", id)
-      .order("created_at", { ascending: false }),
-    supabase
-      .from("activity_log")
-      .select("id, type, body, created_at")
-      .eq("job_id", id)
-      .order("created_at", { ascending: false }),
-  ]);
+  const [{ data: bids }, { data: activity }, { data: tasks }, { data: documents }] =
+    await Promise.all([
+      supabase
+        .from("bids")
+        .select("id, amount, status, sent_date, expires_date")
+        .eq("job_id", id)
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("activity_log")
+        .select("id, type, body, created_at")
+        .eq("job_id", id)
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("tasks")
+        .select("id, title, due_date")
+        .eq("job_id", id)
+        .is("completed_at", null)
+        .order("due_date", { ascending: true, nullsFirst: false }),
+      supabase
+        .from("documents")
+        .select("id, file_name, file_path, file_size, uploaded_at")
+        .eq("job_id", id)
+        .order("uploaded_at", { ascending: false }),
+    ]);
+
+  const documentItems: DocumentItem[] = await Promise.all(
+    (documents ?? []).map(async (doc) => {
+      const { data: signed } = await supabase.storage
+        .from("documents")
+        .createSignedUrl(doc.file_path, 3600);
+      return { ...doc, signedUrl: signed?.signedUrl ?? null };
+    })
+  );
 
   const client = job.clients as unknown as { id: string; name: string } | null;
 
@@ -87,6 +112,18 @@ export default async function JobDetailPage({
             <BidForm action={addBid.bind(null, job.id)} submitLabel="Add bid" />
           </div>
         </details>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="font-serif text-base font-semibold text-black">Tasks</h2>
+        <TaskForm target={{ jobId: job.id }} />
+        <TaskList items={tasks ?? []} target={{ jobId: job.id }} />
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="font-serif text-base font-semibold text-black">Documents</h2>
+        <DocumentForm target={{ jobId: job.id }} />
+        <DocumentList items={documentItems} target={{ jobId: job.id }} />
       </section>
 
       <section className="flex flex-col gap-3">
