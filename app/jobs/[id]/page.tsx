@@ -13,6 +13,7 @@ import { DocumentList, type DocumentItem } from "@/app/document-list";
 import { ActivityForm } from "@/app/activity-form";
 import { ActivityTimeline } from "@/app/activity-timeline";
 import { SubmitButton } from "@/app/submit-button";
+import { addButtonClass, summaryClass } from "@/lib/form-styles";
 
 export default async function JobDetailPage({
   params,
@@ -46,9 +47,8 @@ export default async function JobDetailPage({
         .order("created_at", { ascending: false }),
       supabase
         .from("tasks")
-        .select("id, title, due_date")
+        .select("id, title, due_date, completed_at")
         .eq("job_id", id)
-        .is("completed_at", null)
         .order("due_date", { ascending: true, nullsFirst: false }),
       supabase
         .from("documents")
@@ -69,7 +69,7 @@ export default async function JobDetailPage({
   const client = job.clients as unknown as { id: string; name: string } | null;
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-6">
+    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 px-4 py-6">
       <div className="flex items-center justify-between">
         <div>
           {client && (
@@ -92,7 +92,7 @@ export default async function JobDetailPage({
         </form>
       </div>
 
-      <section className="rounded-lg border border-zinc-200 bg-white p-4">
+      <section className="rounded-lg border border-zinc-200 bg-white p-3">
         <h2 className="mb-3 font-serif text-base font-semibold text-black">Details</h2>
         <JobForm
           action={editJob.bind(null, job.id, job.client_id)}
@@ -101,32 +101,32 @@ export default async function JobDetailPage({
         />
       </section>
 
-      <section className="flex flex-col gap-3">
-        <h2 className="font-serif text-base font-semibold text-black">Bid history</h2>
-        <BidList bids={bids ?? []} jobId={job.id} />
-        <details className="rounded-lg border border-zinc-200 bg-white p-4">
-          <summary className="cursor-pointer text-sm font-medium text-zinc-700">
-            + Add bid
+      <section className="flex flex-col gap-2">
+        <details>
+          <summary className={summaryClass}>
+            <h2 className="font-serif text-base font-semibold text-black">Bid history</h2>
+            <span className={addButtonClass}>+ Add bid</span>
           </summary>
-          <div className="mt-4">
+          <div className="mt-3">
             <BidForm action={addBid.bind(null, job.id)} submitLabel="Add bid" />
           </div>
         </details>
+        <BidList bids={bids ?? []} jobId={job.id} />
       </section>
 
-      <section className="flex flex-col gap-3">
+      <section className="flex flex-col gap-2">
         <h2 className="font-serif text-base font-semibold text-black">Tasks</h2>
         <TaskForm target={{ jobId: job.id }} />
         <TaskList items={tasks ?? []} target={{ jobId: job.id }} />
       </section>
 
-      <section className="flex flex-col gap-3">
+      <section className="flex flex-col gap-2">
         <h2 className="font-serif text-base font-semibold text-black">Documents</h2>
         <DocumentForm target={{ jobId: job.id }} />
         <DocumentList items={documentItems} target={{ jobId: job.id }} />
       </section>
 
-      <section className="flex flex-col gap-3">
+      <section className="flex flex-col gap-2">
         <h2 className="font-serif text-base font-semibold text-black">Activity</h2>
         <ActivityForm target={{ jobId: job.id }} />
         <ActivityTimeline items={activity ?? []} target={{ jobId: job.id }} />

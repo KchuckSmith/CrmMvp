@@ -16,6 +16,7 @@ import { ActivityTimeline } from "@/app/activity-timeline";
 import { JOB_STATUS_OPTIONS } from "@/lib/job-status";
 import type { JobStatus } from "@/lib/supabase/types";
 import { SubmitButton } from "@/app/submit-button";
+import { addButtonClass, summaryClass } from "@/lib/form-styles";
 
 export default async function ClientDetailPage({
   params,
@@ -55,9 +56,8 @@ export default async function ClientDetailPage({
         .order("name", { ascending: true }),
       supabase
         .from("tasks")
-        .select("id, title, due_date")
+        .select("id, title, due_date, completed_at")
         .eq("client_id", id)
-        .is("completed_at", null)
         .order("due_date", { ascending: true, nullsFirst: false }),
       supabase
         .from("documents")
@@ -79,7 +79,7 @@ export default async function ClientDetailPage({
     JOB_STATUS_OPTIONS.find((o) => o.value === status)?.label ?? status;
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-6">
+    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 px-4 py-6">
       <div className="flex items-center justify-between">
         <div>
           <Link href="/clients" className="text-xs text-zinc-500 hover:underline">
@@ -97,7 +97,7 @@ export default async function ClientDetailPage({
         </form>
       </div>
 
-      <section className="rounded-lg border border-zinc-200 bg-white p-4">
+      <section className="rounded-lg border border-zinc-200 bg-white p-3">
         <h2 className="mb-3 font-serif text-base font-semibold text-black">
           Contact info
         </h2>
@@ -108,14 +108,25 @@ export default async function ClientDetailPage({
         />
       </section>
 
-      <section className="flex flex-col gap-3">
-        <h2 className="font-serif text-base font-semibold text-black">Contacts</h2>
-        <div className="flex flex-col divide-y divide-zinc-200 rounded-lg border border-zinc-200 bg-white">
+      <section className="flex flex-col gap-2">
+        <details>
+          <summary className={summaryClass}>
+            <h2 className="font-serif text-base font-semibold text-black">Contacts</h2>
+            <span className={addButtonClass}>+ Add contact</span>
+          </summary>
+          <div className="mt-3">
+            <ContactForm
+              action={createContact.bind(null, client.id)}
+              submitLabel="Add contact"
+            />
+          </div>
+        </details>
+        <div className="flex flex-col divide-y divide-zinc-100">
           {contacts?.length === 0 && (
-            <p className="p-4 text-sm text-zinc-500">No contacts yet.</p>
+            <p className="py-2 text-sm text-zinc-500">No contacts yet.</p>
           )}
           {contacts?.map((contact) => (
-            <div key={contact.id} className="flex flex-col gap-2 p-4 text-sm">
+            <div key={contact.id} className="flex flex-col gap-1 py-2 text-sm">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="font-medium text-zinc-900">{contact.name}</span>
@@ -156,32 +167,27 @@ export default async function ClientDetailPage({
             </div>
           ))}
         </div>
-        <details className="rounded-lg border border-zinc-200 bg-white p-4">
-          <summary className="cursor-pointer text-sm font-medium text-zinc-700">
-            + Add contact
-          </summary>
-          <div className="mt-4">
-            <ContactForm
-              action={createContact.bind(null, client.id)}
-              submitLabel="Add contact"
-            />
-          </div>
-        </details>
       </section>
 
-      <section className="flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <h2 className="font-serif text-base font-semibold text-black">Jobs</h2>
-        </div>
-        <div className="flex flex-col divide-y divide-zinc-200 rounded-lg border border-zinc-200 bg-white">
+      <section className="flex flex-col gap-2">
+        <details>
+          <summary className={summaryClass}>
+            <h2 className="font-serif text-base font-semibold text-black">Jobs</h2>
+            <span className={addButtonClass}>+ Add job</span>
+          </summary>
+          <div className="mt-3">
+            <JobForm action={addJob.bind(null, client.id)} submitLabel="Add job" />
+          </div>
+        </details>
+        <div className="flex flex-col divide-y divide-zinc-100">
           {jobs?.length === 0 && (
-            <p className="p-4 text-sm text-zinc-500">No jobs yet.</p>
+            <p className="py-2 text-sm text-zinc-500">No jobs yet.</p>
           )}
           {jobs?.map((job) => (
             <Link
               key={job.id}
               href={`/jobs/${job.id}`}
-              className="flex items-center justify-between p-4 text-sm hover:bg-zinc-50"
+              className="flex items-center justify-between py-2 text-sm hover:bg-zinc-50"
             >
               <span className="font-medium text-zinc-900">{job.title}</span>
               <span className="text-xs text-zinc-500">
@@ -190,29 +196,21 @@ export default async function ClientDetailPage({
             </Link>
           ))}
         </div>
-        <details className="rounded-lg border border-zinc-200 bg-white p-4">
-          <summary className="cursor-pointer text-sm font-medium text-zinc-700">
-            + Add job
-          </summary>
-          <div className="mt-4">
-            <JobForm action={addJob.bind(null, client.id)} submitLabel="Add job" />
-          </div>
-        </details>
       </section>
 
-      <section className="flex flex-col gap-3">
+      <section className="flex flex-col gap-2">
         <h2 className="font-serif text-base font-semibold text-black">Tasks</h2>
         <TaskForm target={{ clientId: client.id }} />
         <TaskList items={tasks ?? []} target={{ clientId: client.id }} />
       </section>
 
-      <section className="flex flex-col gap-3">
+      <section className="flex flex-col gap-2">
         <h2 className="font-serif text-base font-semibold text-black">Documents</h2>
         <DocumentForm target={{ clientId: client.id }} />
         <DocumentList items={documentItems} target={{ clientId: client.id }} />
       </section>
 
-      <section className="flex flex-col gap-3">
+      <section className="flex flex-col gap-2">
         <h2 className="font-serif text-base font-semibold text-black">Activity</h2>
         <ActivityForm target={{ clientId: client.id }} />
         <ActivityTimeline

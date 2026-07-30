@@ -55,6 +55,23 @@ export async function completeTask(
   revalidateTaskTarget(target);
 }
 
+export async function reopenTask(
+  taskId: string,
+  target: { jobId?: string; clientId?: string }
+) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("tasks")
+    .update({ completed_at: null })
+    .eq("id", taskId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  revalidateTaskTarget(target);
+}
+
 export async function deleteTask(
   taskId: string,
   target: { jobId?: string; clientId?: string }

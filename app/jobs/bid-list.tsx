@@ -30,11 +30,11 @@ export function BidList({ bids, jobId }: { bids: BidItem[]; jobId: string }) {
   }
 
   return (
-    <div className="flex flex-col divide-y divide-zinc-200 rounded-lg border border-zinc-200 bg-white">
+    <div className="flex flex-col divide-y divide-zinc-100">
       {bids.map((bid) => (
         <div
           key={bid.id}
-          className="flex items-center justify-between gap-3 p-3 text-sm"
+          className="flex items-center justify-between gap-3 py-2 text-sm"
         >
           <div className="flex flex-col gap-0.5">
             <span className="font-medium text-zinc-900">

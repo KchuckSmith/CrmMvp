@@ -97,7 +97,7 @@ export default async function DashboardPage() {
                   className="flex items-center justify-between gap-3 py-3 text-sm first:pt-0 last:pb-0"
                 >
                   <div className="flex items-center gap-3">
-                    <TaskCheckbox taskId={task.id} target={target} />
+                    <TaskCheckbox taskId={task.id} target={target} completed={false} />
                     <div className="flex flex-col">
                       <span
                         className={

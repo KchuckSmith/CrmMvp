@@ -29,11 +29,11 @@ export function DocumentList({
   }
 
   return (
-    <ul className="flex flex-col divide-y divide-zinc-200 rounded-lg border border-zinc-200 bg-white">
+    <ul className="flex flex-col divide-y divide-zinc-100">
       {items.map((doc) => (
         <li
           key={doc.id}
-          className="flex items-center justify-between gap-3 p-3 text-sm"
+          className="flex items-center justify-between gap-3 py-2 text-sm"
         >
           <div className="flex flex-col">
             {doc.signedUrl ? (

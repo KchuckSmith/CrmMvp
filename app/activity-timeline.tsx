@@ -28,13 +28,13 @@ export function ActivityTimeline({
   }
 
   return (
-    <ul className="flex flex-col gap-3">
+    <ul className="flex flex-col divide-y divide-zinc-100">
       {items.map((item) => {
         const removeAction = removeActivity.bind(null, item.id, target);
         return (
           <li
             key={item.id}
-            className="flex items-start justify-between gap-3 rounded-md border border-zinc-200 bg-white p-3 text-sm"
+            className="flex items-start justify-between gap-3 py-2 text-sm"
           >
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
