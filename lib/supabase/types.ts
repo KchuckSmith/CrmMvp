@@ -12,6 +12,10 @@ export type ActivityType = "call" | "email" | "site_visit" | "note";
 
 export type ClientSource = "referral" | "web" | "other";
 
+export type AssetCategory = "fleet" | "fixed_asset" | "real_estate";
+
+export type AssetStatus = "available" | "in_use" | "maintenance";
+
 export interface Database {
   public: {
     Tables: {
@@ -256,6 +260,80 @@ export interface Database {
             columns: ["client_id"];
             isOneToOne: false;
             referencedRelation: "clients";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      inventory_items: {
+        Row: {
+          id: string;
+          user_id: string;
+          name: string;
+          unit: string;
+          quantity_on_hand: number;
+          weekly_usage_rate: number | null;
+          target_quantity: number | null;
+          perishable: boolean;
+          restock_cadence_days: number | null;
+          last_restocked_at: string | null;
+          notes: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          name: string;
+          unit: string;
+          quantity_on_hand?: number;
+          weekly_usage_rate?: number | null;
+          target_quantity?: number | null;
+          perishable?: boolean;
+          restock_cadence_days?: number | null;
+          last_restocked_at?: string | null;
+          notes?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["inventory_items"]["Insert"]>;
+        Relationships: [];
+      };
+      assets: {
+        Row: {
+          id: string;
+          user_id: string;
+          category: AssetCategory;
+          name: string;
+          notes: string | null;
+          status: AssetStatus | null;
+          current_job_id: string | null;
+          last_service_date: string | null;
+          quantity: number | null;
+          location: string | null;
+          address: string | null;
+          square_footage: number | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          category: AssetCategory;
+          name: string;
+          notes?: string | null;
+          status?: AssetStatus | null;
+          current_job_id?: string | null;
+          last_service_date?: string | null;
+          quantity?: number | null;
+          location?: string | null;
+          address?: string | null;
+          square_footage?: number | null;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["assets"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "assets_current_job_id_fkey";
+            columns: ["current_job_id"];
+            isOneToOne: false;
+            referencedRelation: "jobs";
             referencedColumns: ["id"];
           },
         ];
